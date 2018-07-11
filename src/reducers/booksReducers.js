@@ -29,18 +29,19 @@ export function booksReducers(state={
 			const currentBookToDelete = [...state.books]
 			const indexToDelete = currentBookToDelete.findIndex(
 				function(book){
-					return book._id === action.payload._id;
+					return book._id === Number(action.payload);
 				}
 			)
 			return {books: [...currentBookToDelete.slice(0, indexToDelete),
 				...currentBookToDelete.slice(indexToDelete + 1)]}
+
 			break;
 		case "UPDATE_BOOK":
 			const currentBookToUpdate = [...state.books]
 
 			const indexToUpdate = currentBookToUpdate.findIndex(
 				function(book){
-					return book._id === action.payload._id;
+					return book._id === Number(action.payload._id);
 				}
 			)
 
@@ -49,7 +50,7 @@ export function booksReducers(state={
 				title: action.payload.title
 			}
 
-			return {books: [...currentBookToUpdate.slice(0, indexToUpdate), newBookToUpdate, 
+			return {books: [...currentBookToUpdate.slice(0, indexToUpdate), newBookToUpdate,
 				...currentBookToUpdate.slice(indexToUpdate + 1)]}
 			break;
 	}
