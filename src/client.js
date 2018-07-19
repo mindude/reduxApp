@@ -1,21 +1,23 @@
 "use strict"
 // REACT
 import React from 'react';
-import {render} from 'react-dom';
-import {Provider} from 'react-redux';
+import { render } from 'react-dom';
+import { Provider } from 'react-redux';
 // REACT-ROUTER
-import {Router, Route, IndexRoute, browserHistory} from 'react-router';
+import { Router, Route, IndexRoute, browserHistory } from 'react-router';
 
-import {applyMiddleware, createStore} from 'redux';
+import { applyMiddleware, createStore } from 'redux';
+import thunk from 'redux-thunk';
 
 // IMPORT COMBINED REDUCERS
 import reducers from './reducers/index';
 // IMPORT ACTIONS
-import {addToCart} from './actions/cartActions';
-import {postBooks, deleteBooks, updateBooks} from './actions/booksActions';
+import { addToCart } from './actions/cartActions';
+import { postBooks, deleteBooks, updateBooks } from './actions/booksActions';
 
 // STEP 1 create the store
-const store = createStore(reducers);
+const middleware = applyMiddleware(thunk);
+const store = createStore(reducers, middleware);
 
 import BooksList from './components/pages/booksList';
 import Cart from './components/pages/cart';
