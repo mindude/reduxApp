@@ -3,9 +3,13 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {Panel, Col, Row, Well, Button, ButtonGroup, Label, Modal} from 'react-bootstrap';
 import {bindActionCreators} from 'redux';
-import {deleteCartItem, updateCart} from '../../actions/cartActions';
+import {deleteCartItem, updateCart, getCart} from '../../actions/cartActions';
 
 class Cart extends React.Component{
+
+	componentDidMount(){
+		this.props.getCart();
+	}
 
 	onDelete(_id){
 		const currentBookToDelete = this.props.cart;
@@ -20,11 +24,11 @@ class Cart extends React.Component{
 		this.props.deleteCartItem(cartAfterDelete);
 	}
 	onIncrement(_id){
-		this.props.updateCart(_id, 1);
+		this.props.updateCart(_id, 1, this.props.cart);
 	}
 	onDecrement(_id, quantity){
 		if(quantity > 1){
-			this.props.updateCart(_id, -1);
+			this.props.updateCart(_id, -1, this.props.cart);
 		}
 	}
 	constructor() {
@@ -79,31 +83,34 @@ class Cart extends React.Component{
 			)
 		}, this)
 		return(
-			<Panel header="Cart" bsStyle="primary">
-				{cartItemsList}
-				<Row>
-					<Col xs={12}>
-						<h6>Total amount: {this.props.totalAmount}</h6>
-						<Button onClick={this.open.bind(this)} bsStyle="success" bsSize="small">
-							PROCEED TO CHECKOUT
-						</Button>
-					</Col>
-					<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
-						<Modal.Header closeButton>
-							<Modal.Title>Thank you!</Modal.Title>
-						</Modal.Header>
-						<Modal.Body>
-							<h6>Your order has been saved</h6>
-							<p>You will receive an email confirmation</p>
-						</Modal.Body>
-						<Modal.Footer>
-							<Col xs={6}>
-								<h6>total $: {this.props.totalAmount}</h6>
-							</Col>
-							<Button onClick={this.close.bind(this)}>Close</Button>
-						</Modal.Footer>
-					</Modal>
-				</Row>
+			<Panel bsStyle="primary">
+				<Panel.Heading>Cart</Panel.Heading>
+				<Panel.Body>
+					{cartItemsList}
+					<Row>
+						<Col xs={12}>
+							<h6>Total amount: {this.props.totalAmount}</h6>
+							<Button onClick={this.open.bind(this)} bsStyle="success" bsSize="small">
+								PROCEED TO CHECKOUT
+							</Button>
+						</Col>
+						<Modal show={this.state.showModal} onHide={this.close.bind(this)}>
+							<Modal.Header closeButton>
+								<Modal.Title>Thank you!</Modal.Title>
+							</Modal.Header>
+							<Modal.Body>
+								<h6>Your order has been saved</h6>
+								<p>You will receive an email confirmation</p>
+							</Modal.Body>
+							<Modal.Footer>
+								<Col xs={6}>
+									<h6>total $: {this.props.totalAmount}</h6>
+								</Col>
+								<Button onClick={this.close.bind(this)}>Close</Button>
+							</Modal.Footer>
+						</Modal>
+					</Row>
+				</Panel.Body>
 			</Panel>
 		)
 	}
@@ -119,7 +126,8 @@ function mapStateToProps(state){
 function mapDispatchToProps(dispatch){
 	return bindActionCreators({
 		deleteCartItem: deleteCartItem,
-		updateCart: updateCart
+		updateCart: updateCart,
+		getCart: getCart
 	}, dispatch)
 }
 

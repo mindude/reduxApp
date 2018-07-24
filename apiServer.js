@@ -1,6 +1,8 @@
 var createError = require('http-errors');
 var express = require('express');
 var cookieParser = require('cookie-parser');
+const session = require('express-session');
+const MongoStore = require('connect-mongo')(session);
 
 var app = express();
 
@@ -16,6 +18,41 @@ app.use(cookieParser());
 // APIs
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://127.0.0.1:27017/bookshop');
+
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, '# MongoDB - Connection Error: '));
+// --->>> SET UP SESSIONS <<<----
+app.use(session({
+  secret: 'mySecretString',
+  saveUninitialized: false,
+  resave: false,
+  cookie: {maxAge: 1000 * 60 * 60 * 24 * 2},
+  store: new MongoStore({mongooseConnection: db, ttl: 2 * 24 * 60 * 60})
+  //ttl: 2 days * 24 hours * 60 minutes * 60 seconds
+}));
+
+// SAVE TO SESSIONS
+app.post('/cart', function(req, res){
+  var cart = req.body;
+  req.session.cart = cart;
+  req.session.save(function(err){
+    if(err){
+      throw err;
+    }
+    res.json(req.session.cart);
+  })
+});
+
+// GET SESSION CART API
+app.get('/cart', function(req, res){
+  if(typeof req.session.cart !== 'undefined'){
+    res.json(req.session.cart);
+  }
+});
+
+
+// --->>> END SESSION SET UP <<<----
+
 
 var Books = require('./models/books.js');
 
